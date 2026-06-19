@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="simigami Library — 태그/레벨 기반 위키 검색">
+  <title>simigami Library</title>
+  <link rel="preload" href="assets/fonts/Cafe24Classictype-v1.1/webfont/Cafe24Classictype-v1.1.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body class="library-page" data-wiki-layout data-wiki-base="" data-wiki-active-tab="library">
+  <nav class="topnav" aria-label="주요 메뉴">
+    <div class="topnav__left">
+      <a class="topnav__logo" href="index.html">simigami</a>
+      <ul class="topnav__tabs"></ul>
+    </div>
+    <div class="topnav__right">
+      <a class="topnav__account" href="https://github.com/simigami" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidenav-overlay" aria-hidden="true"></div>
+
+  <div class="doc-layout">
+    <aside class="sidenav" data-wiki-inject="sidenav" aria-label="문서 탐색"></aside>
+
+    <div class="main">
+      <main class="library">
+        <header class="library__header">
+          <h1>Wiki Library</h1>
+          <p>태그 + 레벨 기반으로 문서를 탐색합니다. 태그 클릭 시 <code>library.html#tag-id</code>로 필터링됩니다.</p>
+        </header>
+
+        <section class="library__filters">
+          <input id="library-search" class="library__search" type="search" placeholder="문서명/설명 검색">
+          <div class="library__active" id="library-active-filter">선택된 태그: 없음</div>
+          <ul class="chip-list" id="library-tag-list"></ul>
+        </section>
+
+        <section class="library__result" id="library-result"></section>
+        <p class="library__empty" id="library-empty" hidden>조건에 맞는 문서가 없습니다.</p>
+      </main>
+
+      <footer class="site-footer" data-wiki-inject="footer"></footer>
+    </div>
+
+    <aside class="toc" data-wiki-inject="toc" aria-label="페이지 목차"></aside>
+  </div>
+
+  <script src="assets/js/wiki-layout.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/library.js"></script>
+</body>
+</html>

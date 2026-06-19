@@ -1,13 +1,18 @@
 ﻿(function () {
   "use strict";
 
+  const wikiBase = document.body.getAttribute("data-wiki-base") ?? "";
   const topnav = document.querySelector(".topnav");
   const sidenav = document.querySelector(".sidenav");
   const overlay = document.querySelector(".sidenav-overlay");
-  const menuBtn = document.querySelector(".topnav__menu-btn");
-  const tocLinks = document.querySelectorAll(".toc__link");
-  const sidenavLinks = document.querySelectorAll(".sidenav__link[href^='#']");
+  let menuBtn = document.querySelector(".topnav__menu-btn");
+  let tocLinks = document.querySelectorAll(".toc__link");
+  let sidenavLinks = document.querySelectorAll(".sidenav__link[href^='#']");
   const sections = document.querySelectorAll("[data-section]");
+  const documentTagList = document.querySelector("#document-tag-list");
+  const documentLevelBadge = document.querySelector("#doc-level-badge");
+  const algorithmIndexBody = document.querySelector("#algorithm-index-body");
+  const currentDocumentId = document.querySelector("[data-document-id]")?.getAttribute("data-document-id");
 
   window.addEventListener("scroll", () => {
     topnav?.classList.toggle("is-scrolled", window.scrollY > 20);
@@ -25,14 +30,18 @@
     document.body.style.overflow = "hidden";
   }
 
-  menuBtn?.addEventListener("click", () => {
-    if (sidenav?.classList.contains("is-open")) {
-      closeSidenav();
-    } else {
-      openSidenav();
-    }
-  });
+  function bindMenuButton() {
+    menuBtn = document.querySelector(".topnav__menu-btn");
+    menuBtn?.addEventListener("click", () => {
+      if (sidenav?.classList.contains("is-open")) {
+        closeSidenav();
+      } else {
+        openSidenav();
+      }
+    });
+  }
 
+  bindMenuButton();
   overlay?.addEventListener("click", closeSidenav);
 
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -47,18 +56,24 @@
     });
   });
 
-  sidenavLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      sidenavLinks.forEach((l) => l.classList.remove("is-active"));
-      link.classList.add("is-active");
+  function bindSidenavLinks() {
+    sidenavLinks = document.querySelectorAll(".sidenav__link[href^='#']");
+    sidenavLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        sidenavLinks.forEach((l) => l.classList.remove("is-active"));
+        link.classList.add("is-active");
+      });
     });
-  });
+  }
+
+  bindSidenavLinks();
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         const id = entry.target.id;
+        tocLinks = document.querySelectorAll(".toc__link");
         tocLinks.forEach((link) => {
           const href = link.getAttribute("href");
           link.classList.toggle("is-active", href === `#${id}`);
@@ -69,6 +84,121 @@
   );
 
   sections.forEach((section) => observer.observe(section));
+
+  window.addEventListener("wiki-layout-ready", () => {
+    bindMenuButton();
+    bindSidenavLinks();
+    tocLinks = document.querySelectorAll(".toc__link");
+  });
+
+  if (window.__wikiLayoutReady) {
+    bindMenuButton();
+    bindSidenavLinks();
+    tocLinks = document.querySelectorAll(".toc__link");
+  }
+
+  async function loadTaxonomy() {
+    if (!currentDocumentId && !algorithmIndexBody) return;
+    try {
+      const response = await fetch(`${wikiBase}assets/data/wiki-taxonomy.json`);
+      if (!response.ok) throw new Error("taxonomy load failed");
+      const taxonomy = await response.json();
+      const tagMap = new Map((taxonomy.tags || []).map((tag) => [tag.id, tag]));
+      const docMap = new Map((taxonomy.documents || []).map((doc) => [doc.id, doc]));
+
+      if (algorithmIndexBody) {
+        renderAlgorithmIndex(taxonomy, docMap);
+      }
+
+      if (!currentDocumentId || !documentTagList) return;
+      const doc = docMap.get(currentDocumentId);
+      if (!doc) return;
+
+      if (documentLevelBadge) {
+        documentLevelBadge.textContent = `Lv. ${doc.level}`;
+      }
+
+      const renderTag = (tagId) => {
+        const tag = tagMap.get(tagId);
+        if (!tag) return null;
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        const level = document.createElement("span");
+        link.className = "chip chip--link";
+        link.href = `${wikiBase}library.html#${tag.id}`;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = tag.name;
+        link.setAttribute("aria-label", `${tag.name} 태그 문서 보기`);
+        level.className = "chip__level";
+        level.textContent = `Lv.${tag.level}`;
+        link.appendChild(level);
+        li.appendChild(link);
+        return li;
+      };
+
+      documentTagList.replaceChildren();
+      (doc.tags || []).forEach((tagId) => {
+        const metaChip = renderTag(tagId);
+        if (metaChip) documentTagList.appendChild(metaChip);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function renderAlgorithmIndex(taxonomy, docMap) {
+    const overview = docMap.get("algorithms-overview");
+    const entryIds = overview?.indexEntries || [];
+    algorithmIndexBody.replaceChildren();
+
+    entryIds.forEach((docId) => {
+      const doc = docMap.get(docId);
+      if (!doc) return;
+
+      const row = document.createElement("tr");
+      const titleCell = document.createElement("td");
+      const categoryCell = document.createElement("td");
+      const timeCell = document.createElement("td");
+      const spaceCell = document.createElement("td");
+      const summaryCell = document.createElement("td");
+      const actionCell = document.createElement("td");
+
+      const titleLink = document.createElement("a");
+      titleLink.className = "doc-table__title";
+      titleLink.href = `./${doc.path.split("/").pop()}`;
+      titleLink.textContent = doc.title;
+
+      titleCell.appendChild(titleLink);
+      categoryCell.textContent = doc.index?.category || "—";
+      categoryCell.className = "doc-table__category";
+
+      const time = document.createElement("code");
+      time.className = "doc-table__mono";
+      time.textContent = doc.index?.timeComplexity || "—";
+      timeCell.appendChild(time);
+
+      const space = document.createElement("code");
+      space.className = "doc-table__mono";
+      space.textContent = doc.index?.spaceComplexity || "—";
+      spaceCell.appendChild(space);
+
+      summaryCell.className = "doc-table__summary";
+      summaryCell.textContent = doc.summary || "";
+
+      const actionLink = document.createElement("a");
+      actionLink.className = "doc-table__action";
+      actionLink.href = `./${doc.path.split("/").pop()}`;
+      actionLink.setAttribute("aria-label", `${doc.title} 문서 열기`);
+      actionLink.innerHTML = '<span class="material-symbols-outlined">arrow_forward</span>';
+      actionCell.appendChild(actionLink);
+
+      row.append(titleCell, categoryCell, timeCell, spaceCell, summaryCell, actionCell);
+      algorithmIndexBody.appendChild(row);
+    });
+  }
+
+  loadTaxonomy();
 
   document.querySelectorAll(".code-block__copy").forEach((btn) => {
     btn.addEventListener("click", async () => {
