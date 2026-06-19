@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Spinlock & CAS — 게임 서버 멀티스레딩 동기화 면접 노트">
+  <title>Spinlock &amp; CAS</title>
+  <link rel="preload" href="../assets/fonts/Cafe24Classictype-v1.1/webfont/Cafe24Classictype-v1.1.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+</head>
+<body data-wiki-layout data-wiki-base="../" data-wiki-active-tab="documentation">
+
+  <nav class="topnav" aria-label="주요 메뉴">
+    <div class="topnav__left">
+      <a class="topnav__logo" href="../index.html">simigami</a>
+      <ul class="topnav__tabs"></ul>
+    </div>
+    <div class="topnav__right">
+      <a class="topnav__account" href="https://github.com/simigami" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidenav-overlay" aria-hidden="true"></div>
+
+  <div class="doc-layout">
+    <aside class="sidenav" data-wiki-inject="sidenav" aria-label="문서 탐색"></aside>
+
+    <div class="main">
+      <article class="article article--study" data-wiki-content data-document-id="spinlock">
+
+        <nav class="breadcrumbs" aria-label="경로">
+          <a href="../index.html">Docs</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <a href="../library.html#systems">Systems</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <span class="breadcrumbs__current">Spinlock &amp; CAS</span>
+        </nav>
+
+        <header class="page-header">
+          <p class="page-header__eyebrow">// Game Server Interview Notes</p>
+          <h1 class="page-header__title">Spinlock <span style="color:var(--primary)">&amp;</span> CAS</h1>
+          <p class="page-header__lead">멀티스레딩 동기화 원리 · 면접 대비 정리</p>
+          <div class="page-header__doc-meta">
+            <div class="doc-meta-card">
+              <span class="doc-meta-card__label">Level</span>
+              <span class="doc-level-badge" id="doc-level-badge">Lv. -</span>
+            </div>
+            <div class="doc-meta-card doc-meta-card--tags">
+              <span class="doc-meta-card__label">Tags</span>
+              <ul class="chip-list" id="document-tag-list"></ul>
+            </div>
+          </div>
+        </header>
+
+        <div class="study-stack">
+
+          <section class="section" id="definition" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-blue">🔒</div>
+                <span class="card-title">Spinlock이란?</span>
+              </div>
+              <div class="card-body">
+                <p>
+                  <strong>Spinlock</strong>은 락을 획득하기 전까지 <em>while 루프를 돌며 대기</em>하는 락이다.
+                  Context Switching을 막고, 다른 스레드가 락을 해제하는 순간 즉시 선점할 수 있다는 점이 특징이다.
+                </p>
+                <p>
+                  하나의 <code>Spinlock</code> 인스턴스를 여러 스레드에서 <code>lock_guard</code>로 감싸 공유한다.
+                </p>
+
+                <div class="pros-cons">
+                  <div class="box box-pro">
+                    <div class="box-label">✓ 장점</div>
+                    <p>유저 모드에서 계속 대기 가능 → 커널 전환 오버헤드 없음.<br>
+                    락 경쟁이 짧은 경우 Mutex보다 훨씬 빠르다.</p>
+                  </div>
+                  <div class="box box-con">
+                    <div class="box-label">✗ 단점</div>
+                    <p>다른 스레드가 락을 오래 점유하면, 대기 스레드는 CPU를 낭비하며 <em>아무 일도 안 함</em>.<br>
+                    싱글 코어 환경에서는 데드락에 가까운 상황이 발생할 수 있다.</p>
+                  </div>
+                </div>
+
+                <div class="callout callout-info">
+                  <div class="callout-icon">💡</div>
+                  <div><strong>언제 Spinlock을 써야 하나?</strong><br>
+                  임계 영역이 매우 짧고 (수 μs 이하), 멀티코어 환경일 때. 긴 작업엔 Mutex가 낫다.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="broken" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-red">⚠️</div>
+                <span class="card-title">잘못된 구현 — 왜 동작하지 않는가</span>
+              </div>
+              <div class="card-body">
+                <div class="code-wrap">
+                  <div class="code-title"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;spinlock_broken.cpp</div>
+                  <pre><span class="kw">class</span> <span class="ty">Spinlock</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">lock</span>() {
+<span class="hl-r">        <span class="kw">while</span>(_locked) {}   <span class="cm">// ① 루프 대기</span></span>
+<span class="hl-r">        _locked = <span class="kw">true</span>;     <span class="cm">// ② 별도 대입 — 원자적이지 않음!</span></span>
+    }
+    <span class="kw">void</span> <span class="fn">unlock</span>() { _locked = <span class="kw">false</span>; }
+
+<span class="kw">private</span>:
+    <span class="kw">volatile</span> <span class="ty">bool</span> _locked = <span class="kw">false</span>;
+};</pre>
+                </div>
+
+                <h3>실제로 일어나는 일 (Race Condition)</h3>
+                <p>우리가 원하는 흐름과 현실은 다르다.</p>
+
+                <div class="flow-grid">
+                  <div>
+                    <div class="box box-pro" style="margin-bottom:8px;"><div class="box-label">🎯 우리가 원하는 것</div></div>
+                    <div class="flow">
+                      <div class="flow-step"><div class="step-num step-ok">1</div><div class="step-body">t1의 락이 해제 → <code>_locked = false</code></div></div>
+                      <div class="flow-step"><div class="step-num step-ok">2</div><div class="step-body">t2가 루프를 탈출 → <code>_locked = true</code></div></div>
+                      <div class="flow-step"><div class="step-num step-ok">3</div><div class="step-body">t1은 t2가 끝날 때까지 대기</div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="box box-con" style="margin-bottom:8px;"><div class="box-label">💥 현실</div></div>
+                    <div class="flow">
+                      <div class="flow-step"><div class="step-num step-bad">1</div><div class="step-body">t1이 unlock → <code>_locked = false</code></div></div>
+                      <div class="flow-step"><div class="step-num step-bad">2</div><div class="step-body">t2가 루프 탈출 (false 확인)</div></div>
+                      <div class="flow-step"><div class="step-num step-bad">3</div><div class="step-body"><strong>t1도 루프 탈출!</strong> t2보다 먼저 <code>true</code> 대입 → 락 재획득</div></div>
+                      <div class="flow-step"><div class="step-num step-bad">4</div><div class="step-body">t2가 <code>true</code> 보고 다시 대기 → <em>t1이 연속 2번 락 획득</em></div></div>
+                      <div class="flow-step"><div class="step-num step-bad">5</div><div class="step-body">결과: t2는 락을 <em>0번</em> 획득, t1은 <em>2번</em> 연속 획득 가능</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="callout callout-warn">
+                  <div class="callout-icon">⚡</div>
+                  <div>
+                    <strong>핵심 문제:</strong> <code>while()</code> 탈출과 <code>= true</code> 대입이 두 개의 별도 명령이라<br>
+                    그 사이에 다른 스레드가 끼어들 수 있다. 멀티스레딩에서 <em>어셈블리 1줄 단위로 선점</em>이 일어난다.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="cas" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-purple">⚛️</div>
+                <span class="card-title">해결책 — CAS (Compare And Swap)</span>
+              </div>
+              <div class="card-body">
+                <p>
+                  "루프 탈출"과 "값 변경"을 <strong>하나의 원자적 명령</strong>으로 합쳐야 한다.
+                  C++11이 제공하는 <code>std::atomic</code>의 <strong>CAS 연산</strong>이 이를 해결한다.
+                </p>
+
+                <h3>CAS 동작 원리</h3>
+                <div class="cas-compare">
+                  <div class="cas-cell match">
+                    <div class="label">① 메모리의 실제 값</div>
+                    <div class="val">false</div>
+                    <div style="margin-top:.5rem;font-size:12px;color:var(--on-surface-variant);">현재 락이 해제된 상태</div>
+                  </div>
+                  <div class="cas-cell match">
+                    <div class="label">② 내가 기대하는 값 (expected)</div>
+                    <div class="val">false</div>
+                    <div style="margin-top:.5rem;font-size:12px;color:var(--on-surface-variant);">두 값이 같으면 → desired로 교체 &amp; true 반환</div>
+                  </div>
+                </div>
+                <p style="font-size:14px;color:var(--on-surface-variant);margin-bottom:1rem;">두 값이 <em>다르면</em> → 교체 없이 false 반환, expected에 실제 값을 써넣음.</p>
+
+                <div class="code-wrap">
+                  <div class="code-title"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;spinlock_correct.cpp</div>
+                  <pre><span class="kw">class</span> <span class="ty">Spinlock</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">lock</span>() {
+        <span class="ty">bool</span> expected = <span class="kw">false</span>;
+        <span class="ty">bool</span> desired  = <span class="kw">true</span>;
+
+<span class="hl">        <span class="kw">while</span>(!_locked.<span class="fn">compare_exchange_strong</span>(expected, desired)) {</span>
+<span class="hl">            expected = <span class="kw">false</span>; <span class="cm">// expected는 ref → 실패 시 실제 값으로 덮어써짐, 초기화 필수!</span></span>
+<span class="hl">        }</span>
+        <span class="cm">// while 탈출 == CAS 성공 == 이미 원자적으로 desired(true) 세팅 완료</span>
+        <span class="cm">// store(true) 별도 호출 불필요 — compare_exchange 성공 시 값이 이미 교체됨</span>
+    }
+
+    <span class="kw">void</span> <span class="fn">unlock</span>() {
+<span class="hl-g">        _locked.<span class="fn">store</span>(<span class="kw">false</span>); <span class="cm">// Atomic 변수의 안전한 값 할당</span></span>
+    }
+
+<span class="kw">private</span>:
+<span class="hl-g">    <span class="ty">atomic</span>&lt;<span class="ty">bool</span>&gt; _locked = <span class="kw">false</span>; <span class="cm">// CAS를 위한 Atomic 변수</span></span>
+};</pre>
+                </div>
+
+                <h3>compare_exchange_weak vs strong</h3>
+                <table>
+                  <tr><th>메서드</th><th><a class="text-link" href="./spurious-failure.html">spurious failure</a></th><th>성능</th><th>권장 사용</th></tr>
+                  <tr><td><code>compare_exchange_weak</code></td><td>⚠️ 있음 (<a class="text-link" href="./spurious-failure.html">가짜 실패</a> 가능)</td><td>빠름 (일부 아키텍처)</td><td>루프 내부 (while 자체가 재시도)</td></tr>
+                  <tr><td><code>compare_exchange_strong</code></td><td>✅ 없음</td><td>약간 느림</td><td>루프 밖, 단발성 체크</td></tr>
+                </table>
+                <div class="callout callout-info">
+                  <div class="callout-icon">📌</div>
+                  <div>실전에서는 <code>while</code> 루프 안이므로 <code>weak</code>를 써도 되지만, 명확한 의도 전달을 위해
+                  Spinlock 구현에선 <code>strong</code>이 더 읽기 편하다.
+                  <a class="text-link" href="./spurious-failure.html">Spurious Failure</a> 문서에서 가짜 실패 원리를 확인할 수 있다.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="volatile" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-yellow">❓</div>
+                <span class="card-title">면접 단골 — volatile의 진짜 의미</span>
+              </div>
+              <div class="card-body">
+                <table>
+                  <tr><th>언어</th><th>volatile의 의미</th><th>멀티스레드 안전성</th></tr>
+                  <tr>
+                    <td><strong>C++</strong></td>
+                    <td>컴파일러에게 <em>"이 변수를 최적화하지 말 것"</em>을 지시.<br>
+                        변수의 레지스터 캐싱·dead store 제거를 막는다.<br>
+                        <span style="color:#d08078;font-size:12px;">⚠ 컴파일러의 명령어 재배치(reordering)는 막지 못함</span></td>
+                    <td>❌ <strong>보장 안 함</strong>. CPU 하드웨어 캐시·명령어 재배치는 여전히 발생.<br>
+                        재배치 방지는 <code>std::atomic</code>의 memory order가 담당.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>C# / Java</strong></td>
+                    <td>멀티스레드 환경에서 <em>가시성(Visibility) 보장</em>.<br>
+                        여러 스레드에 의해 수정될 수 있음을 명시한다.</td>
+                    <td>⚠️ 원자성 보장은 아님. 가시성만 보장.</td>
+                  </tr>
+                </table>
+
+                <div class="callout callout-interview">
+                  <div class="callout-icon">🎤</div>
+                  <div>
+                    <strong>예상 면접 질문:</strong> "C++에서 volatile bool로 Spinlock을 만들면 안 되는 이유는?"<br><br>
+                    <strong>모범 답변:</strong> volatile은 컴파일러 최적화만 막을 뿐, CPU 수준의 메모리 재배치와
+                    캐시 일관성 문제는 해결하지 못합니다. 스레드 안전성을 위해선 C++11의
+                    <code>std::atomic</code>이나 <code>std::mutex</code>를 사용해야 합니다.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="compare" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-green">📊</div>
+                <span class="card-title">동기화 수단 비교 — 면접 정리</span>
+              </div>
+              <div class="card-body">
+                <table>
+                  <tr><th>수단</th><th>대기 방식</th><th>커널 전환</th><th>적합한 상황</th></tr>
+                  <tr>
+                    <td><code>Spinlock</code></td>
+                    <td>바쁜 대기 (busy-wait)</td>
+                    <td>❌ 없음</td>
+                    <td>임계 영역이 매우 짧음 (μs 단위), 멀티코어</td>
+                  </tr>
+                  <tr>
+                    <td><code>std::mutex</code></td>
+                    <td>슬립 (OS 스케줄러에 양보)</td>
+                    <td>✅ 있음</td>
+                    <td>임계 영역이 길거나, 대기 시간이 예측 불가</td>
+                  </tr>
+                  <tr>
+                    <td><code>std::atomic</code></td>
+                    <td>Lock-free 연산</td>
+                    <td>❌ 없음</td>
+                    <td>단순 정수 카운터, 플래그 변수</td>
+                  </tr>
+                </table>
+
+                <div class="callout callout-interview">
+                  <div class="callout-icon">🎤</div>
+                  <div>
+                    <strong>추가 예상 질문:</strong> "게임 서버에서 Spinlock과 Mutex 중 어느 것을 선택하겠나?"<br><br>
+                    <strong>모범 답변:</strong> 네트워크 패킷 수신 큐처럼 락 경합이 짧은 경우엔 Spinlock, DB 쿼리나
+                    파일 I/O처럼 대기가 긴 경우엔 Mutex를 선택합니다. 프로파일링 결과 없이 무조건 한 쪽을 고집하면
+                    안 됩니다.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="final-code" data-section>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon icon-green">✅</div>
+                <span class="card-title">최종 완성 코드 (전체)</span>
+              </div>
+              <div class="card-body">
+                <div class="code-wrap">
+                  <div class="code-title"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;spinlock_final.cpp</div>
+                  <pre><span class="kw">#include</span> <span class="st">&lt;atomic&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;thread&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;mutex&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">class</span> <span class="ty">Spinlock</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">lock</span>() {
+        <span class="ty">bool</span> expected = <span class="kw">false</span>;
+        <span class="ty">bool</span> desired  = <span class="kw">true</span>;
+        <span class="kw">while</span> (!_locked.<span class="fn">compare_exchange_strong</span>(expected, desired))
+            expected = <span class="kw">false</span>; <span class="cm">// ref 변수이므로 매 루프마다 초기화</span>
+    }
+    <span class="kw">void</span> <span class="fn">unlock</span>() {
+        _locked.<span class="fn">store</span>(<span class="kw">false</span>);
+    }
+
+<span class="kw">private</span>:
+    atomic&lt;<span class="ty">bool</span>&gt; _locked = <span class="kw">false</span>;
+};
+
+<span class="ty">Spinlock</span> spinLock;
+<span class="ty">int32_t</span> sum = <span class="nu">0</span>;
+
+<span class="kw">void</span> <span class="fn">Add</span>() {
+    <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">0</span>; i &lt; <span class="nu">100'000</span>; ++i) {
+        lock_guard&lt;<span class="ty">Spinlock</span>&gt; g(spinLock);
+        sum++;
+    }
+}
+
+<span class="kw">void</span> <span class="fn">Sub</span>() {
+    <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">0</span>; i &lt; <span class="nu">100'000</span>; ++i) {
+        lock_guard&lt;<span class="ty">Spinlock</span>&gt; g(spinLock);
+        sum--;
+    }
+}
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    thread t1(Add), t2(Sub);
+    t1.<span class="fn">join</span>(); t2.<span class="fn">join</span>();
+    cout &lt;&lt; <span class="st">"sum: "</span> &lt;&lt; sum &lt;&lt; endl; <span class="cm">// 항상 0</span>
+}</pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer" data-wiki-inject="footer"></footer>
+    </div>
+
+    <aside class="toc" data-wiki-inject="toc" aria-label="목차"></aside>
+  </div>
+
+  <script src="../assets/js/wiki-layout.js"></script>
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>

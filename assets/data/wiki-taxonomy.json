@@ -23,6 +23,18 @@
       "name": "Research Notes",
       "level": 4,
       "description": "실험/검증 중심의 문헌 및 학습 노트"
+    },
+    {
+      "id": "game",
+      "name": "게임",
+      "level": 5,
+      "description": "게임 서버·엔진·클라이언트 개발"
+    },
+    {
+      "id": "interview",
+      "name": "면접",
+      "level": 5,
+      "description": "기술 면접 대비 노트"
     }
   ],
   "navTree": [
@@ -33,6 +45,15 @@
       "children": [
         { "documentId": "bfs-algorithm", "label": "Breadth-First Search (BFS)" },
         { "documentId": "dfs-algorithm", "label": "Depth-First Search (DFS)" }
+      ]
+    },
+    {
+      "label": "Systems",
+      "tagId": "systems",
+      "icon": "memory",
+      "children": [
+        { "documentId": "spinlock", "label": "Spinlock & CAS" },
+        { "documentId": "spurious-failure", "label": "Spurious Failure" }
       ]
     }
   ],
@@ -98,6 +119,32 @@
         "timeComplexity": "O(V + E)",
         "spaceComplexity": "O(V)"
       }
+    },
+    {
+      "id": "spinlock",
+      "title": "Spinlock & CAS",
+      "path": "document/spinlock.html",
+      "level": 5,
+      "summary": "Spinlock과 CAS(Compare-And-Swap) 기반 동기화 구현, volatile 함정, Mutex 비교를 정리한 게임 서버 면접 노트",
+      "tags": [
+        "computer-science",
+        "systems",
+        "game",
+        "interview"
+      ]
+    },
+    {
+      "id": "spurious-failure",
+      "title": "Spurious Failure",
+      "path": "document/spurious-failure.html",
+      "level": 6,
+      "summary": "compare_exchange_weak의 Spurious Failure(가짜 실패) 원인, 진짜 실패와의 차이, weak/strong 선택 기준",
+      "tags": [
+        "computer-science",
+        "systems",
+        "game",
+        "interview"
+      ]
     }
   ]
 }

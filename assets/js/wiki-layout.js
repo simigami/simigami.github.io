@@ -356,10 +356,19 @@
       .map((section, i) => {
 
         const title = section.querySelector(".section__title");
+        const cardTitle = section.querySelector(".card-title");
+        let num = title?.querySelector(".section__num")?.textContent?.trim() || "";
+        let label = "";
 
-        const num = title?.querySelector(".section__num")?.textContent?.trim() || "";
-
-        const label = title?.textContent.replace(num, "").trim() || section.id;
+        if (title) {
+          label = title.textContent.replace(num, "").trim();
+        } else if (cardTitle) {
+          if (!num) num = `${String(i + 1).padStart(2, "0")}.`;
+          label = cardTitle.textContent.trim();
+        } else {
+          if (!num) num = `${String(i + 1).padStart(2, "0")}.`;
+          label = section.id;
+        }
 
         const active = i === 0 ? " is-active" : "";
 
