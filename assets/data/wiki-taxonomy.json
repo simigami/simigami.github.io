@@ -53,7 +53,8 @@
       "icon": "memory",
       "children": [
         { "documentId": "spinlock", "label": "Spinlock & CAS" },
-        { "documentId": "spurious-failure", "label": "Spurious Failure" }
+        { "documentId": "spurious-failure", "label": "Spurious Failure" },
+        { "documentId": "cas-hardware", "label": "CMPXCHG & LL/SC" }
       ]
     }
   ],
@@ -139,6 +140,19 @@
       "path": "document/spurious-failure.html",
       "level": 6,
       "summary": "compare_exchange_weak의 Spurious Failure(가짜 실패) 원인, 진짜 실패와의 차이, weak/strong 선택 기준",
+      "tags": [
+        "computer-science",
+        "systems",
+        "game",
+        "interview"
+      ]
+    },
+    {
+      "id": "cas-hardware",
+      "title": "CMPXCHG & LL/SC",
+      "path": "document/cas-hardware.html",
+      "level": 6,
+      "summary": "x86 LOCK CMPXCHG와 ARM Load-Linked/Store-Conditional의 CAS 하드웨어 구현 방식, Spurious Failure와의 연결",
       "tags": [
         "computer-science",
         "systems",
