@@ -1,0 +1,103 @@
+﻿{
+  "tags": [
+    {
+      "id": "computer-science",
+      "name": "Computer Science",
+      "level": 1,
+      "description": "컴퓨터 과학 전반의 개념과 원리"
+    },
+    {
+      "id": "algorithms",
+      "name": "Algorithms",
+      "level": 2,
+      "description": "알고리즘 패러다임과 문제 해결 전략"
+    },
+    {
+      "id": "systems",
+      "name": "Systems",
+      "level": 3,
+      "description": "운영체제, 네트워크, 분산 시스템"
+    },
+    {
+      "id": "research-notes",
+      "name": "Research Notes",
+      "level": 4,
+      "description": "실험/검증 중심의 문헌 및 학습 노트"
+    }
+  ],
+  "navTree": [
+    {
+      "label": "Algorithms",
+      "documentId": "algorithms-overview",
+      "icon": "hub",
+      "children": [
+        { "documentId": "bfs-algorithm", "label": "Breadth-First Search (BFS)" },
+        { "documentId": "dfs-algorithm", "label": "Depth-First Search (DFS)" }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "simigami-study-wiki",
+      "title": "simigami Study Wiki",
+      "path": "document/simigami-study-wiki.html",
+      "level": 2,
+      "summary": "컴퓨터 과학 학습 내용을 정리하는 개인 위키의 메인 소개 문서",
+      "tags": [
+        "computer-science",
+        "algorithms",
+        "systems",
+        "research-notes"
+      ]
+    },
+    {
+      "id": "algorithms-overview",
+      "title": "Algorithms",
+      "path": "document/algorithms.html",
+      "level": 3,
+      "summary": "그래프 탐색 등 알고리즘 학습 문서 인덱스",
+      "tags": [
+        "computer-science",
+        "algorithms"
+      ],
+      "indexEntries": [
+        "bfs-algorithm",
+        "dfs-algorithm"
+      ]
+    },
+    {
+      "id": "bfs-algorithm",
+      "title": "Breadth-First Search (BFS)",
+      "path": "document/bfs.html",
+      "level": 4,
+      "summary": "그래프를 레벨 순서로 탐색하는 BFS의 개념, 복잡도, 구현 포인트를 정리한 문서",
+      "tags": [
+        "computer-science",
+        "algorithms",
+        "research-notes"
+      ],
+      "index": {
+        "category": "Graph Traversal",
+        "timeComplexity": "O(V + E)",
+        "spaceComplexity": "O(V)"
+      }
+    },
+    {
+      "id": "dfs-algorithm",
+      "title": "Depth-First Search (DFS)",
+      "path": "document/dfs.html",
+      "level": 5,
+      "summary": "재귀/스택 기반 DFS의 동작 방식과 백트래킹 활용을 정리한 문서",
+      "tags": [
+        "computer-science",
+        "algorithms",
+        "research-notes"
+      ],
+      "index": {
+        "category": "Graph Traversal",
+        "timeComplexity": "O(V + E)",
+        "spaceComplexity": "O(V)"
+      }
+    }
+  ]
+}

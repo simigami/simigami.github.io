@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="simigami Study Wiki 문서 설명 페이지">
+  <title>simigami Study Wiki Document</title>
+  <link rel="preload" href="../assets/fonts/Cafe24Classictype-v1.1/webfont/Cafe24Classictype-v1.1.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/theme.css">
+</head>
+<body data-wiki-layout data-wiki-base="../" data-wiki-active-tab="documentation">
+
+  <nav class="topnav" aria-label="주요 메뉴">
+    <div class="topnav__left">
+      <a class="topnav__logo" href="../index.html">simigami</a>
+      <ul class="topnav__tabs"></ul>
+    </div>
+    <div class="topnav__right">
+      <a class="topnav__account" href="https://github.com/simigami" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidenav-overlay" aria-hidden="true"></div>
+
+  <div class="doc-layout">
+    <aside class="sidenav" data-wiki-inject="sidenav" aria-label="문서 탐색"></aside>
+
+    <div class="main">
+      <article class="article" data-wiki-content data-document-id="simigami-study-wiki">
+
+        <nav class="breadcrumbs" aria-label="경로">
+          <a href="../index.html">Docs</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <a href="../library.html">Library</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <span class="breadcrumbs__current">simigami Study Wiki</span>
+        </nav>
+
+        <header class="page-header">
+          <h1 class="page-header__title">simigami Study Wiki</h1>
+          <p class="page-header__lead">이 페이지는 `document/{name}.html` 규칙을 따르는 해당 위키의 고유 설명 문서입니다.</p>
+          <div class="page-header__doc-meta">
+            <div class="doc-meta-card">
+              <span class="doc-meta-card__label">Level</span>
+              <span class="doc-level-badge" id="doc-level-badge">Lv. -</span>
+            </div>
+            <div class="doc-meta-card doc-meta-card--tags">
+              <span class="doc-meta-card__label">Tags</span>
+              <ul class="chip-list" id="document-tag-list"></ul>
+            </div>
+          </div>
+        </header>
+
+        <section class="section" id="about" data-section>
+          <h2 class="section__title"><span class="section__num">01.</span> About</h2>
+          <div class="section__body">
+            <p>현재 문서는 위키의 운영 기준(태그 + 레벨)을 설명하는 루트 소개 페이지입니다.</p>
+          </div>
+        </section>
+
+      </article>
+
+      <footer class="site-footer" data-wiki-inject="footer"></footer>
+    </div>
+
+    <aside class="toc" data-wiki-inject="toc" aria-label="목차"></aside>
+  </div>
+
+  <script src="../assets/js/wiki-layout.js"></script>
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>

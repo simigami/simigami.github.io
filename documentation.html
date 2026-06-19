@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="simigami Wiki Documentation — 태그, 레벨, 메타데이터 가이드">
+  <title>Wiki Documentation</title>
+  <link rel="preload" href="assets/fonts/Cafe24Classictype-v1.1/webfont/Cafe24Classictype-v1.1.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body data-wiki-layout data-wiki-base="" data-wiki-active-tab="documentation">
+
+  <nav class="topnav" aria-label="주요 메뉴">
+    <div class="topnav__left">
+      <a class="topnav__logo" href="index.html">simigami</a>
+      <ul class="topnav__tabs"></ul>
+    </div>
+    <div class="topnav__right">
+      <a class="topnav__account" href="https://github.com/simigami" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidenav-overlay" aria-hidden="true"></div>
+
+  <div class="doc-layout">
+    <aside class="sidenav" data-wiki-inject="sidenav" aria-label="문서 탐색"></aside>
+
+    <div class="main">
+      <article class="article" data-wiki-content>
+
+        <nav class="breadcrumbs" aria-label="경로">
+          <a href="index.html">Docs</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <span class="breadcrumbs__current">Documentation</span>
+        </nav>
+
+        <header class="page-header">
+          <h1 class="page-header__title">Wiki Documentation</h1>
+          <p class="page-header__lead">
+            simigami Study Wiki의 문서 구조, 태그, 레벨, 메타데이터를 이해하기 위한 공식 가이드입니다.
+          </p>
+        </header>
+
+        <section class="section" id="overview" data-section>
+          <h2 class="section__title"><span class="section__num">01.</span> Overview</h2>
+          <div class="section__body">
+            <p>이 위키는 <strong>태그 + 레벨</strong> 기반으로 문서를 분류합니다.</p>
+            <p>각 위키 주제는 고유 설명 페이지 <code>document/{name}.html</code>을 가지며, Library에서 태그/검색으로 탐색할 수 있습니다.</p>
+          </div>
+        </section>
+
+        <section class="section" id="tags" data-section>
+          <h2 class="section__title"><span class="section__num">02.</span> Tags</h2>
+          <div class="section__body">
+            <p>태그는 문서의 주제 영역을 나타냅니다. 예: <span class="text-classic">Computer Science</span>, <span class="text-classic">Algorithms</span>.</p>
+            <p>태그를 클릭하면 <code>library.html#{tag-id}</code>로 이동해 해당 태그 문서 목록을 확인합니다.</p>
+            <p>태그 정의는 <code>assets/data/wiki-taxonomy.json</code>에서 중앙 관리합니다.</p>
+          </div>
+        </section>
+
+        <section class="section" id="levels" data-section>
+          <h2 class="section__title"><span class="section__num">03.</span> Levels</h2>
+          <div class="section__body">
+            <p>레벨은 문서의 거시적·미시적 범위를 숫자로 표현합니다.</p>
+            <p><strong>낮은 레벨</strong>은 넓고 거시적입니다. 예: Algorithms (Lv.2).</p>
+            <p><strong>높은 레벨</strong>은 구체적이고 미시적입니다. 예: Unreal Engine Dedicated Server, DFS (Lv.5).</p>
+            <p>레벨 기반 Library 필터는 추후 제공 예정입니다.</p>
+          </div>
+        </section>
+
+        <section class="section" id="metadata" data-section>
+          <h2 class="section__title"><span class="section__num">04.</span> Document Metadata</h2>
+          <div class="section__body">
+            <p>모든 문서 상단(page-header)에는 Level, Tags 메타 카드가 각각 별도 줄에 표시됩니다.</p>
+            <ul>
+              <li><strong>Level</strong>: 문서 레벨 (<code>Lv.4</code>)</li>
+              <li><strong>Tags</strong>: 연결된 태그 목록</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section" id="links" data-section>
+          <h2 class="section__title"><span class="section__num">05.</span> Links</h2>
+          <div class="section__body">
+            <p>문서 간 이동은 두 방식을 사용합니다.</p>
+            <p><strong>글자 링크</strong>: 본문 텍스트에서 바로 이동합니다.</p>
+            <p><strong>카드 링크</strong>: 대표 이미지, URL, 설명이 포함된 프리뷰 카드로 이동합니다.</p>
+            <p>모든 링크는 새 페이지(새 탭)에서 열립니다.</p>
+          </div>
+        </section>
+
+      </article>
+
+      <footer class="site-footer" data-wiki-inject="footer"></footer>
+    </div>
+
+    <aside class="toc" data-wiki-inject="toc" aria-label="목차"></aside>
+  </div>
+
+  <script src="assets/js/wiki-layout.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
