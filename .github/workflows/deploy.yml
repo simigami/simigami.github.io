@@ -1,4 +1,4 @@
-﻿name: Deploy MkDocs to GitHub Pages
+﻿name: Deploy to GitHub Pages
 
 on:
   push:
@@ -15,13 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Deploy static site
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          exclude_assets: |
+            .github
+            docs
+            venv
+            mockups
+            mkdocs.yml
+            requirements.txt
+            README.md
+            .gitignore
+            site
