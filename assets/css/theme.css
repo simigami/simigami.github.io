@@ -705,6 +705,13 @@ strong { color: var(--on-surface); font-weight: 500; }
   font-size: 14px;
 }
 
+.doc-table--chapter-index th:first-child,
+.doc-table--chapter-index td:first-child {
+  width: 8.5rem;
+  min-width: 8.5rem;
+  white-space: nowrap;
+}
+
 .doc-table th,
 .doc-table td {
   padding: 14px 16px;
@@ -775,6 +782,84 @@ strong { color: var(--on-surface); font-weight: 500; }
 
 .doc-table__action .material-symbols-outlined {
   font-size: 18px;
+}
+
+.doc-placeholder {
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(208, 197, 175, 0.55);
+}
+
+.doc-outline-list {
+  margin-top: 12px;
+  padding-left: 20px;
+  color: var(--on-surface-variant);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.doc-outline-list li + li {
+  margin-top: 4px;
+}
+
+.doc-outline-list--ordered {
+  list-style: decimal;
+  padding-left: 24px;
+}
+
+.section__subtitle {
+  font-family: var(--font-classic);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 28px 0 12px;
+}
+
+.section__body ul:not(.chip-list):not(.doc-outline-list) {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: rgba(229, 226, 225, 0.85);
+  line-height: 1.7;
+}
+
+.section__body ul:not(.chip-list):not(.doc-outline-list) li + li {
+  margin-top: 6px;
+}
+
+.doc-ref {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  margin-bottom: 16px;
+}
+
+.doc-note {
+  margin: 16px 0;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  border-left: 3px solid var(--primary);
+  background: rgba(242, 202, 80, 0.06);
+}
+
+.doc-figure {
+  margin: 20px 0;
+}
+
+.doc-figure img,
+.doc-figure object {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid rgba(77, 70, 53, 0.35);
+  background: rgba(14, 14, 14, 0.55);
+}
+
+.doc-figure figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--on-surface-variant);
+  text-align: center;
 }
 
 /* Link styles */
@@ -1246,6 +1331,49 @@ strong { color: var(--on-surface); font-weight: 500; }
 
 .article--study .card-body p:last-child {
   margin-bottom: 0;
+}
+
+.article--study .card-body ul:not(.chip-list),
+.article--study .card-body ol {
+  margin: 12px 0;
+  padding-left: 1.5em;
+  color: rgba(229, 226, 225, 0.85);
+  line-height: 1.7;
+}
+
+.article--study .card-body ul:not(.chip-list) {
+  list-style: disc;
+}
+
+.article--study .card-body ol {
+  list-style: decimal;
+}
+
+.article--study .card-body li + li {
+  margin-top: 6px;
+}
+
+.article--study .card-body ul:not(.chip-list) ul,
+.article--study .card-body ol ol,
+.article--study .card-body ul:not(.chip-list) ol,
+.article--study .card-body ol ul {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.article--study .callout ul,
+.article--study .callout ol {
+  margin: 8px 0 0;
+  padding-left: 1.5em;
+  line-height: 1.7;
+}
+
+.article--study .callout ul {
+  list-style: disc;
+}
+
+.article--study .callout ol {
+  list-style: decimal;
 }
 
 .article--study .card-body strong {

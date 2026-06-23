@@ -35,6 +35,12 @@
       "name": "면접",
       "level": 5,
       "description": "기술 면접 대비 노트"
+    },
+    {
+      "id": "unreal-engine",
+      "name": "Unreal Engine",
+      "level": 4,
+      "description": "언리얼 엔진 게임플레이·네트워킹·리플리케이션"
     }
   ],
   "navTree": [
@@ -48,6 +54,23 @@
       ]
     },
     {
+      "label": "Networks",
+      "icon": "lan",
+      "children": [
+        {
+          "label": "OSI",
+          "children": [
+            {
+              "label": "Transport Layer",
+              "children": [
+                { "documentId": "networks-udp", "label": "UDP" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "label": "Systems",
       "tagId": "systems",
       "icon": "memory",
@@ -55,6 +78,33 @@
         { "documentId": "spinlock", "label": "Spinlock & CAS" },
         { "documentId": "spurious-failure", "label": "Spurious Failure" },
         { "documentId": "cas-hardware", "label": "CMPXCHG & LL/SC" }
+      ]
+    },
+    {
+      "label": "UE Replication",
+      "documentId": "ue-replication-overview",
+      "icon": "sync",
+      "children": [
+        {
+          "label": "Part 1. 이론",
+          "children": [
+            { "documentId": "ue-replication-part1-ch01", "label": "Ch1. 네트워크 기본 개념" }
+          ]
+        },
+        {
+          "label": "Part 2. 코드",
+          "children": [
+            { "documentId": "ue-replication-part2-ch01", "label": "Ch1. 사전 준비" },
+            { "documentId": "ue-replication-part2-ch02", "label": "Ch2. 최초 복제" },
+            { "documentId": "ue-replication-part2-ch03", "label": "Ch3. 복제 루프" },
+            { "documentId": "ue-replication-part2-ch04", "label": "Ch4. 속성 직렬화" },
+            { "documentId": "ue-replication-part2-ch05", "label": "Ch5. Bunch·채널 송신" },
+            { "documentId": "ue-replication-part2-ch06", "label": "Ch6. 패킷 조립" },
+            { "documentId": "ue-replication-part2-ch07", "label": "Ch7. PacketHandler" },
+            { "documentId": "ue-replication-part2-ch08", "label": "Ch8. 소켓 전송" },
+            { "documentId": "ue-replication-part2-ch09", "label": "Ch9. 수신 역방향" }
+          ]
+        }
       ]
     }
   ],
@@ -159,6 +209,102 @@
         "game",
         "interview"
       ]
+    },
+    {
+      "id": "ue-replication-overview",
+      "title": "UE Replication",
+      "path": "document/ue-replication/index.html",
+      "level": 3,
+      "summary": "UE5 서버-클라이언트 리플리케이션 이론·코드 위키 소개",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "networks-udp",
+      "title": "UDP",
+      "path": "document/networks/osi/transport-layer/udp.html",
+      "level": 5,
+      "summary": "UDP 개념·특징·헤더 구조, 최대 페이로드, RFC 768 정리",
+      "tags": ["computer-science", "systems"]
+    },
+    {
+      "id": "ue-replication-part1-ch01",
+      "title": "비유를 통해 배우는 네트워크 기본 개념",
+      "path": "document/ue-replication/part1-ch01.html",
+      "level": 4,
+      "summary": "UE5 서버-클라이언트, Authority, 택배 비유, NetGUID, 채널, Dormancy 등 리플리케이션 기본 개념",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch01",
+      "title": "사전 준비 (클래스 등록 타임, 1회)",
+      "path": "document/ue-replication/part2-ch01.html",
+      "level": 4,
+      "summary": "UPROPERTY(Replicated), GetLifetimeReplicatedProps, RepLayout 정적 빌드",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch02",
+      "title": "최초 복제 (Actor가 처음 클라이언트에 보일 때, 1회)",
+      "path": "document/ue-replication/part2-ch02.html",
+      "level": 4,
+      "summary": "NetGUID, GUID Cache, PackageMap, 채널 Open, OpenBunch",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch03",
+      "title": "매 틱 — 복제 루프 (ServerReplicateActors)",
+      "path": "document/ue-replication/part2-ch03.html",
+      "level": 5,
+      "summary": "UNetDriver 복제 루프, 관련성, 우선순위, 채널 예산, Saturation",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch04",
+      "title": "매 틱 — 속성 비교와 직렬화 (FObjectReplicator)",
+      "path": "document/ue-replication/part2-ch04.html",
+      "level": 5,
+      "summary": "dirty 감지, CompareProperties, SendProperties, NetSerialize",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch05",
+      "title": "매 틱 — Bunch 생성과 채널 송신 (UActorChannel)",
+      "path": "document/ue-replication/part2-ch05.html",
+      "level": 5,
+      "summary": "ReplicateActor, SubObject 복제, SendBunch, Dormancy",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch06",
+      "title": "패킷 조립과 송신 (UNetConnection)",
+      "path": "document/ue-replication/part2-ch06.html",
+      "level": 5,
+      "summary": "SendRawBunch, FlushNet, ACK/NAK, RepNotify",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch07",
+      "title": "PacketHandler 파이프라인",
+      "path": "document/ue-replication/part2-ch07.html",
+      "level": 5,
+      "summary": "핸들러 체인, 핸드셰이크, AES-GCM 암호화",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch08",
+      "title": "네트워크 전송 직전 (UIpNetDriver → FSocket)",
+      "path": "document/ue-replication/part2-ch08.html",
+      "level": 5,
+      "summary": "LowLevelSend, ISocketSubsystem, SendTo",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
+    },
+    {
+      "id": "ue-replication-part2-ch09",
+      "title": "수신 — 소켓에서 Actor까지 (역방향)",
+      "path": "document/ue-replication/part2-ch09.html",
+      "level": 5,
+      "summary": "TickDispatch, 역직렬화, ReceiveProperties, OnRep",
+      "tags": ["computer-science", "systems", "game", "unreal-engine"]
     }
   ]
 }
