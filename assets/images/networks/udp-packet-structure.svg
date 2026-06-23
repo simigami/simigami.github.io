@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="UDP packet structure">
+  <rect width="640" height="360" fill="#131313" rx="8"/>
+  <text x="320" y="34" text-anchor="middle" font-family="system-ui,sans-serif" font-size="17" font-weight="700" fill="#f2ca50">UDP Datagram in IP Packet</text>
+  <rect x="180" y="58" width="280" height="56" rx="4" fill="rgba(151,176,255,0.12)" stroke="#97b0ff" stroke-width="1.5"/>
+  <text x="320" y="82" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#e5e2e1">IP Header</text>
+  <text x="320" y="102" text-anchor="middle" font-family="monospace" font-size="12" fill="#d0c5af">20 bytes - Network Layer (L3)</text>
+  <rect x="180" y="126" width="280" height="56" rx="4" fill="rgba(242,202,80,0.14)" stroke="#f2ca50" stroke-width="1.5"/>
+  <text x="320" y="150" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#e5e2e1">UDP Header</text>
+  <text x="320" y="170" text-anchor="middle" font-family="monospace" font-size="12" fill="#d0c5af">8 bytes - Transport Layer (L4)</text>
+  <rect x="180" y="194" width="280" height="120" rx="4" fill="rgba(208,197,175,0.08)" stroke="#99907c" stroke-width="1.5"/>
+  <text x="320" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" fill="#e5e2e1">Data (Payload)</text>
+  <text x="320" y="272" text-anchor="middle" font-family="monospace" font-size="12" fill="#d0c5af">Application message - up to 65,507 B</text>
+  <text x="528" y="90" font-family="system-ui,sans-serif" font-size="13" fill="#97b0ff">L3 Network</text>
+  <text x="528" y="158" font-family="system-ui,sans-serif" font-size="13" fill="#f2ca50">L4 Transport</text>
+  <text x="528" y="258" font-family="system-ui,sans-serif" font-size="13" fill="#d0c5af">Application data</text>
+  <line x1="468" y1="86" x2="518" y2="86" stroke="#99907c" stroke-width="1.2"/>
+  <line x1="468" y1="154" x2="518" y2="154" stroke="#f2ca50" stroke-width="1.2"/>
+  <line x1="468" y1="254" x2="518" y2="254" stroke="#99907c" stroke-width="1.2"/>
+  <text x="320" y="338" text-anchor="middle" font-family="monospace" font-size="12" fill="#d0c5af">1 IP datagram - 1 UDP datagram</text>
+</svg>

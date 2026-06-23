@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UE5 리플리케이션 이론·코드 위키 소개">
+  <title>UE Replication — Unreal Engine</title>
+  <link rel="preload" href="../../assets/fonts/Cafe24Classictype-v1.1/webfont/Cafe24Classictype-v1.1.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+</head>
+<body data-wiki-layout data-wiki-base="../../" data-wiki-active-tab="documentation">
+  <nav class="topnav" aria-label="주요 메뉴">
+    <div class="topnav__left">
+      <a class="topnav__logo" href="../../index.html">simigami</a>
+      <ul class="topnav__tabs"></ul>
+    </div>
+    <div class="topnav__right">
+      <a class="topnav__account" href="https://github.com/simigami" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">account_circle</span>
+      </a>
+    </div>
+  </nav>
+  <div class="sidenav-overlay" aria-hidden="true"></div>
+  <div class="doc-layout">
+    <aside class="sidenav" data-wiki-inject="sidenav" aria-label="문서 탐색"></aside>
+    <div class="main">
+      <article class="article" data-wiki-content data-document-id="ue-replication-overview">
+        <nav class="breadcrumbs" aria-label="경로">
+          <a href="../../index.html">Docs</a>
+          <span class="material-symbols-outlined breadcrumbs__sep">chevron_right</span>
+          <span class="breadcrumbs__current">UE Replication</span>
+        </nav>
+        <header class="page-header">
+          <p class="page-header__eyebrow">// Unreal Engine 5</p>
+          <h1 class="page-header__title">UE Replication</h1>
+          <p class="page-header__lead">UE5 서버-클라이언트 리플리케이션을 이론(비유)과 코드(엔진 소스 흐름) 두 축으로 정리하는 위키입니다. Part 1에서 개념을 잡고, Part 2에서 매 틱·최초 복제 단계별 구현을 따라갑니다.</p>
+          <div class="page-header__doc-meta">
+            <div class="doc-meta-card">
+              <span class="doc-meta-card__label">Level</span>
+              <span class="doc-level-badge" id="doc-level-badge">Lv. -</span>
+            </div>
+            <div class="doc-meta-card doc-meta-card--tags">
+              <span class="doc-meta-card__label">Tags</span>
+              <ul class="chip-list" id="document-tag-list"></ul>
+            </div>
+          </div>
+        </header>
+
+        <section class="section" id="about" data-section>
+          <h2 class="section__title"><span class="section__num">00.</span> About</h2>
+          <div class="section__body">
+            <p>
+              <strong>Part 1. 이론</strong> — Authority, NetGUID, Bunch/Packet/Connection 비유 등
+              “왜 이렇게 동작하는가”를 먼저 이해합니다.
+            </p>
+            <p>
+              <strong>Part 2. 코드</strong> — <code>ServerReplicateActors</code>부터 소켓 송수신·역직렬화까지
+              엔진 내부 호출 순서를 Chapter 단위로 쪼개어 다룹니다.
+            </p>
+            <p class="doc-placeholder">각 Chapter 본문은 순차적으로 채워 나갈 예정입니다.</p>
+          </div>
+        </section>
+
+        <section class="section" id="part1" data-section>
+          <h2 class="section__title"><span class="section__num">01.</span> Part 1. 이론</h2>
+          <div class="section__body">
+            <p>UE5 리플리케이션을 비유와 개념으로 먼저 익히는 이론 편입니다.</p>
+            <div class="doc-table-wrap">
+              <table class="doc-table doc-table--chapter-index">
+                <thead>
+                  <tr>
+                    <th scope="col">Chapter</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col"><span class="visually-hidden">Open</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Chapter 1</td>
+                    <td><a class="doc-table__title" href="./part1-ch01.html">비유를 통해 배우는 네트워크 기본 개념</a></td>
+                    <td class="doc-table__summary">서버-클라이언트, Authority, 택배 비유, NetGUID, 채널, Dormancy 등 기본 개념</td>
+                    <td><a class="doc-table__action" href="./part1-ch01.html" aria-label="비유를 통해 배우는 네트워크 기본 개념 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="part2" data-section>
+          <h2 class="section__title"><span class="section__num">02.</span> Part 2. 코드</h2>
+          <div class="section__body">
+            <p>엔진 소스 흐름을 따라가는 코드·구현 편입니다. 각 Chapter는 매 틱/1회성 단계별로 나뉩니다.</p>
+            <div class="doc-table-wrap">
+              <table class="doc-table doc-table--chapter-index">
+                <thead>
+                  <tr>
+                    <th scope="col">Chapter</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col"><span class="visually-hidden">Open</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Chapter 1</td>
+                    <td><a class="doc-table__title" href="./part2-ch01.html">사전 준비 (클래스 등록 타임, 1회)</a></td>
+                    <td class="doc-table__summary">UPROPERTY(Replicated), GetLifetimeReplicatedProps, RepLayout 정적 빌드</td>
+                    <td><a class="doc-table__action" href="./part2-ch01.html" aria-label="사전 준비 (클래스 등록 타임, 1회) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 2</td>
+                    <td><a class="doc-table__title" href="./part2-ch02.html">최초 복제 (Actor가 처음 클라이언트에 보일 때, 1회)</a></td>
+                    <td class="doc-table__summary">NetGUID, GUID Cache, PackageMap, 채널 Open, OpenBunch</td>
+                    <td><a class="doc-table__action" href="./part2-ch02.html" aria-label="최초 복제 (Actor가 처음 클라이언트에 보일 때, 1회) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 3</td>
+                    <td><a class="doc-table__title" href="./part2-ch03.html">매 틱 — 복제 루프 (ServerReplicateActors)</a></td>
+                    <td class="doc-table__summary">관련성, 우선순위, 채널 예산, Saturation</td>
+                    <td><a class="doc-table__action" href="./part2-ch03.html" aria-label="매 틱 — 복제 루프 (ServerReplicateActors) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 4</td>
+                    <td><a class="doc-table__title" href="./part2-ch04.html">매 틱 — 속성 비교와 직렬화 (FObjectReplicator)</a></td>
+                    <td class="doc-table__summary">dirty 감지, CompareProperties, SendProperties, NetSerialize</td>
+                    <td><a class="doc-table__action" href="./part2-ch04.html" aria-label="매 틱 — 속성 비교와 직렬화 (FObjectReplicator) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 5</td>
+                    <td><a class="doc-table__title" href="./part2-ch05.html">매 틱 — Bunch 생성과 채널 송신 (UActorChannel)</a></td>
+                    <td class="doc-table__summary">ReplicateActor, SubObject, SendBunch, Dormancy</td>
+                    <td><a class="doc-table__action" href="./part2-ch05.html" aria-label="매 틱 — Bunch 생성과 채널 송신 (UActorChannel) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 6</td>
+                    <td><a class="doc-table__title" href="./part2-ch06.html">패킷 조립과 송신 (UNetConnection)</a></td>
+                    <td class="doc-table__summary">SendRawBunch, FlushNet, ACK/NAK, RepNotify</td>
+                    <td><a class="doc-table__action" href="./part2-ch06.html" aria-label="패킷 조립과 송신 (UNetConnection) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 7</td>
+                    <td><a class="doc-table__title" href="./part2-ch07.html">PacketHandler 파이프라인</a></td>
+                    <td class="doc-table__summary">핸들러 체인, 핸드셰이크, AES-GCM 암호화</td>
+                    <td><a class="doc-table__action" href="./part2-ch07.html" aria-label="PacketHandler 파이프라인 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 8</td>
+                    <td><a class="doc-table__title" href="./part2-ch08.html">네트워크 전송 직전 (UIpNetDriver → FSocket)</a></td>
+                    <td class="doc-table__summary">LowLevelSend, SocketSubsystem, SendTo</td>
+                    <td><a class="doc-table__action" href="./part2-ch08.html" aria-label="네트워크 전송 직전 (UIpNetDriver → FSocket) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                  <tr>
+                    <td>Chapter 9</td>
+                    <td><a class="doc-table__title" href="./part2-ch09.html">수신 — 소켓에서 Actor까지 (역방향)</a></td>
+                    <td class="doc-table__summary">TickDispatch, 역직렬화, ReceiveProperties, OnRep</td>
+                    <td><a class="doc-table__action" href="./part2-ch09.html" aria-label="수신 — 소켓에서 Actor까지 (역방향) 문서 열기"><span class="material-symbols-outlined">arrow_forward</span></a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </article>
+      <footer class="site-footer" data-wiki-inject="footer"></footer>
+    </div>
+    <aside class="toc" data-wiki-inject="toc" aria-label="목차"></aside>
+  </div>
+  <script src="../../assets/js/wiki-layout.js"></script>
+  <script src="../../assets/js/app.js"></script>
+</body>
+</html>
